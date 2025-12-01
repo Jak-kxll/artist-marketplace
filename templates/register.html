@@ -1,70 +1,105 @@
+# FILE: templates/register.html (UPDATED)
+"""
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Register - Mercadito</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
-	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Art Marketplace</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-	<div class="container">
-		<h1>Create an Account</h1>
-		<form id="registerForm">
-			<div class="form-group">
-				<label for="username">Username</label>
-				<input type="text" id="username" name="username" required>
-			</div>
-			<div class="form-group">
-				<label for="email">Email</label>
-				<input type="email" id="email" name="email" required>
-			</div>
-			<div class="form-group">
-				<label for="password">Password</label>
-				<input type="password" id="password" name="password" required>
-			</div>
-			<div class="form-group">
-				<label for="confirm_password">Confirm Password</label>
-				<input type="password" id="confirm_password" name="confirm_password" required>
-			</div>
-			<div class="form-group">
-				<button type="submit">Register</button>
-			</div>
-		</form>
-		<div id="registerError" class="error-message" style="display:none;"></div>
-		<div id="registerSuccess" class="success-message" style="display:none;"></div>
-		<p>Already have an account? <a href="{{ url_for('login_page') }}">Login here</a>.</p>
-	</div>
-	<script>
-		$(document).ready(function() {
-			$('#registerForm').on('submit', function(e) {
-				e.preventDefault();
-				$('#registerError').hide();
-				$('#registerSuccess').hide();
-				
-				var formData = {
-					username: $('#username').val(),
-					email: $('#email').val(),
-					password: $('#password').val()
-				};
-				
-				$.ajax({
-					type: 'POST',
-					url: '{{ url_for("register") }}',
-					contentType: 'application/json',
-					data: JSON.stringify(formData),
-					success: function(response) {
-						$('#registerSuccess').text(response.message).show();
-						$('#registerForm')[0].reset();
-					},
-					error: function(xhr) {
-						var errorMessage = xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error';
-						$('#registerError').text(errorMessage).show();
-					}
-				});
-			});
-		});
-	</script>
+    <div class="container">
+        <header class="site-header">
+            <h1><a href="/" style="text-decoration: none; color: inherit;">🎨 ArtMarket</a></h1>
+        </header>
+
+        <div class="auth-container">
+            <form class="auth-form" id="registerForm">
+                <h2 style="text-align: center; margin-bottom: 24px; color: var(--color-dark);">Create Account</h2>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Choose a username" minlength="3" maxlength="80">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="At least 6 characters" minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Re-enter password">
+                </div>
+
+                <button type="submit" class="btn-primary">Register</button>
+
+                <div id="message" class="message" style="display: none;"></div>
+
+                <p class="auth-link">
+                    Already have an account? <a href="/login-page">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageEl = document.getElementById('message');
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password !== confirmPassword) {
+                messageEl.textContent = 'Passwords do not match!';
+                messageEl.style.display = 'block';
+                messageEl.style.background = '#f8d7da';
+                messageEl.style.color = '#721c24';
+                return;
+            }
+
+            const data = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    messageEl.textContent = result.message;
+                    messageEl.style.display = 'block';
+                    messageEl.style.background = '#d4edda';
+                    messageEl.style.color = '#155724';
+                    setTimeout(() => window.location.href = '/', 1000);
+                } else {
+                    messageEl.textContent = result.error;
+                    messageEl.style.display = 'block';
+                    messageEl.style.background = '#f8d7da';
+                    messageEl.style.color = '#721c24';
+                }
+            } catch (error) {
+                messageEl.textContent = 'An error occurred. Please try again.';
+                messageEl.style.display = 'block';
+                messageEl.style.background = '#f8d7da';
+                messageEl.style.color = '#721c24';
+            }
+        });
+    </script>
 </body>
 </html>
+"""
