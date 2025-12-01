@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{{ user.username }}'s Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="back" href="/">← Home</a>
+        <h1>{{ user.username }}</h1>
+    </header>
+
+    <main class="container profile">
+        <section class="profile-info">
+            {% if user.avatar_url %}<img class="avatar" src="{{ user.avatar_url }}" alt="{{ user.username }}">{% endif %}
+            {% if user.bio %}<p class="bio">{{ user.bio }}</p>{% endif %}
+            <p>Artist: {% if user.is_artist %}<strong>Yes</strong>{% else %}No{% endif %}</p>
+        </section>
+
+        <section class="masonry">
+            {% for post in posts.items %}
+                <article class="card">
+                    <div class="card-media">
+                        <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{ post.title }}</h3>
+                        {% if post.price %}<div class="card-price">${{ '%.2f'|format(post.price) }}</div>{% endif %}
+                        <p class="card-desc">{{ post.description[:120] }}</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        {% if posts.has_prev or posts.has_next %}
+        <div class="pagination">
+            {% if posts.has_prev %}<a href="?page={{ posts.prev_num }}">← Prev</a>{% endif %}
+            <span>Page {{ posts.page }} / {{ posts.pages }}</span>
+            {% if posts.has_next %}<a href="?page={{ posts.next_num }}">Next →</a>{% endif %}
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

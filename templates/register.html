@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Register - Mercadito</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+	<div class="container">
+		<h1>Create an Account</h1>
+		<form id="registerForm">
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" id="username" name="username" required>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" required>
+			</div>
+			<div class="form-group">
+				<label for="confirm_password">Confirm Password</label>
+				<input type="password" id="confirm_password" name="confirm_password" required>
+			</div>
+			<div class="form-group">
+				<button type="submit">Register</button>
+			</div>
+		</form>
+		<div id="registerError" class="error-message" style="display:none;"></div>
+		<div id="registerSuccess" class="success-message" style="display:none;"></div>
+		<p>Already have an account? <a href="{{ url_for('login_page') }}">Login here</a>.</p>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$('#registerForm').on('submit', function(e) {
+				e.preventDefault();
+				$('#registerError').hide();
+				$('#registerSuccess').hide();
+				
+				var formData = {
+					username: $('#username').val(),
+					email: $('#email').val(),
+					password: $('#password').val()
+				};
+				
+				$.ajax({
+					type: 'POST',
+					url: '{{ url_for("register") }}',
+					contentType: 'application/json',
+					data: JSON.stringify(formData),
+					success: function(response) {
+						$('#registerSuccess').text(response.message).show();
+						$('#registerForm')[0].reset();
+					},
+					error: function(xhr) {
+						var errorMessage = xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error';
+						$('#registerError').text(errorMessage).show();
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

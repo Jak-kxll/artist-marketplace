@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="back" href="/">← Home</a>
+        <h1>Search: "{{ query }}"</h1>
+    </header>
+
+    <main class="container">
+        {% if posts %}
+            <h2>Posts</h2>
+            <section class="masonry">
+                {% for post in posts.items %}
+                    <article class="card">
+                        <div class="card-media">
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ post.title }}</h3>
+                            {% if post.price %}<div class="card-price">${{ '%.2f'|format(post.price) }}</div>{% endif %}
+                            <p class="card-desc">{{ post.description[:120] }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% if users %}
+            <h2>Users</h2>
+            <ul class="user-list">
+                {% for u in users %}
+                    <li><a href="/profile/{{ u.username }}">{{ u.username }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </main>
+</body>
+</html>
