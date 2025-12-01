@@ -16,9 +16,14 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, 'static')
 )
 
-# Use absolute path for database
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "artist_market.db")}'
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+# Use PostgreSQL on Render (DATABASE_URL env var), SQLite locally
+database_url = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(BASE_DIR, "artist_market.db")}')
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
